@@ -91,6 +91,7 @@ var position = flag.String("p", "bottom", "Position: \"bottom\", \"top\" \"left\
 var resident = flag.Bool("r", false, "Leave the program resident, but w/o hotspot")
 var targetOutput = flag.String("o", "", "name of Output to display the dock on")
 var allowMultipleInstances = flag.Bool("m", false, "allow Multiple instances of the dock (skip lock file check)")
+var hideIndicators = flag.Bool("hi", false, "hide Indicators: don't show task state indicator dots")
 
 var vertical bool
 var alignmentBox *gtk.Box
