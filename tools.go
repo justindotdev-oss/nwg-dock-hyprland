@@ -72,24 +72,29 @@ func pinnedButton(ID string, position *string) *gtk.Box {
 
 	button.Connect("enter-notify-event", cancelClose)
 
-	var pixbuf *gdkpixbuf.Pixbuf
-	if !vertical {
-		pixbuf, err = gdkpixbuf.NewPixbufFromFileAtSize(filepath.Join(dataHome, "nwg-dock-hyprland/images/task-empty.svg"),
-			imgSizeScaled, imgSizeScaled/8)
-	} else {
-		pixbuf, err = gdkpixbuf.NewPixbufFromFileAtSize(filepath.Join(dataHome, "nwg-dock-hyprland/images/task-empty-vertical.svg"),
-			imgSizeScaled/8, imgSizeScaled)
-	}
-
-	if err == nil {
-		img := gtk.NewImageFromPixbuf(pixbuf)
-		if *position == "left" || *position == "top" {
-			box.PackStart(img, false, false, 0)
-			box.PackStart(button, false, false, 0)
+	if !*hideIndicators {
+		var pixbuf *gdkpixbuf.Pixbuf
+		if !vertical {
+			pixbuf, err = gdkpixbuf.NewPixbufFromFileAtSize(filepath.Join(dataHome, "nwg-dock-hyprland/images/task-empty.svg"),
+				imgSizeScaled, imgSizeScaled/8)
 		} else {
-			box.PackStart(button, false, false, 0)
-			box.PackStart(img, false, false, 0)
+			pixbuf, err = gdkpixbuf.NewPixbufFromFileAtSize(filepath.Join(dataHome, "nwg-dock-hyprland/images/task-empty-vertical.svg"),
+				imgSizeScaled/8, imgSizeScaled)
 		}
+
+		if err == nil {
+			img := gtk.NewImageFromPixbuf(pixbuf)
+			if *position == "left" || *position == "top" {
+				box.PackStart(img, false, false, 0)
+				box.PackStart(button, false, false, 0)
+			} else {
+				box.PackStart(button, false, false, 0)
+				box.PackStart(img, false, false, 0)
+			}
+		}
+	} else {
+		// When hiding indicators, just pack the button
+		box.PackStart(button, false, false, 0)
 	}
 
 	return box
@@ -146,23 +151,28 @@ func launcherButton(position *string) *gtk.Box {
 			})
 			button.Connect("enter-notify-event", cancelClose)
 
-			if !vertical {
-				pixbuf, e = gdkpixbuf.NewPixbufFromFileAtSize(filepath.Join(dataHome, "nwg-dock-hyprland/images/task-empty.svg"),
-					imgSizeScaled, imgSizeScaled/8)
-			} else {
-				pixbuf, e = gdkpixbuf.NewPixbufFromFileAtSize(filepath.Join(dataHome, "nwg-dock-hyprland/images/task-empty-vertical.svg"),
-					imgSizeScaled/8, imgSizeScaled)
-			}
-
-			if e == nil {
-				img := gtk.NewImageFromPixbuf(pixbuf)
-				if *position == "left" || *position == "top" {
-					box.PackStart(img, false, false, 0)
-					box.PackStart(button, false, false, 0)
+			if !*hideIndicators {
+				if !vertical {
+					pixbuf, e = gdkpixbuf.NewPixbufFromFileAtSize(filepath.Join(dataHome, "nwg-dock-hyprland/images/task-empty.svg"),
+						imgSizeScaled, imgSizeScaled/8)
 				} else {
-					box.PackStart(button, false, false, 0)
-					box.PackStart(img, false, false, 0)
+					pixbuf, e = gdkpixbuf.NewPixbufFromFileAtSize(filepath.Join(dataHome, "nwg-dock-hyprland/images/task-empty-vertical.svg"),
+						imgSizeScaled/8, imgSizeScaled)
 				}
+
+				if e == nil {
+					img := gtk.NewImageFromPixbuf(pixbuf)
+					if *position == "left" || *position == "top" {
+						box.PackStart(img, false, false, 0)
+						box.PackStart(button, false, false, 0)
+					} else {
+						box.PackStart(button, false, false, 0)
+						box.PackStart(img, false, false, 0)
+					}
+				}
+			} else {
+				// When hiding indicators, just pack the button
+				box.PackStart(button, false, false, 0)
 			}
 		}
 		return box
@@ -212,46 +222,51 @@ func taskButton(t client, instances []client, position *string) *gtk.Box {
 	}
 	button.SetTooltipText(getName(t.Class))
 
-	var img *gtk.Image
-	var pixbuf *gdkpixbuf.Pixbuf
-	var err error
-	if len(instances) > 1 {
-		if !vertical {
-			pixbuf, err = gdkpixbuf.NewPixbufFromFileAtSize(filepath.Join(dataHome, "nwg-dock-hyprland/images/task-multiple.svg"),
-				imgSizeScaled, imgSizeScaled/8)
+	if !*hideIndicators {
+		var img *gtk.Image
+		var pixbuf *gdkpixbuf.Pixbuf
+		var err error
+		if len(instances) > 1 {
+			if !vertical {
+				pixbuf, err = gdkpixbuf.NewPixbufFromFileAtSize(filepath.Join(dataHome, "nwg-dock-hyprland/images/task-multiple.svg"),
+					imgSizeScaled, imgSizeScaled/8)
+			} else {
+				pixbuf, err = gdkpixbuf.NewPixbufFromFileAtSize(filepath.Join(dataHome, "nwg-dock-hyprland/images/task-multiple-vertical.svg"),
+					imgSizeScaled/8, imgSizeScaled)
+			}
+		} else if len(instances) == 1 {
+			if !vertical {
+				pixbuf, err = gdkpixbuf.NewPixbufFromFileAtSize(filepath.Join(dataHome, "nwg-dock-hyprland/images/task-single.svg"),
+					imgSizeScaled, imgSizeScaled/8)
+			} else {
+				pixbuf, err = gdkpixbuf.NewPixbufFromFileAtSize(filepath.Join(dataHome, "nwg-dock-hyprland/images/task-single-vertical.svg"),
+					imgSizeScaled/8, imgSizeScaled)
+			}
 		} else {
-			pixbuf, err = gdkpixbuf.NewPixbufFromFileAtSize(filepath.Join(dataHome, "nwg-dock-hyprland/images/task-multiple-vertical.svg"),
-				imgSizeScaled/8, imgSizeScaled)
+			if !vertical {
+				pixbuf, err = gdkpixbuf.NewPixbufFromFileAtSize(filepath.Join(dataHome, "nwg-dock-hyprland/images/task-empty.svg"),
+					imgSizeScaled, imgSizeScaled/8)
+			} else {
+				pixbuf, err = gdkpixbuf.NewPixbufFromFileAtSize(filepath.Join(dataHome, "nwg-dock-hyprland/images/task-empty-vertical.svg"),
+					imgSizeScaled/8, imgSizeScaled)
+			}
 		}
-	} else if len(instances) == 1 {
-		if !vertical {
-			pixbuf, err = gdkpixbuf.NewPixbufFromFileAtSize(filepath.Join(dataHome, "nwg-dock-hyprland/images/task-single.svg"),
-				imgSizeScaled, imgSizeScaled/8)
-		} else {
-			pixbuf, err = gdkpixbuf.NewPixbufFromFileAtSize(filepath.Join(dataHome, "nwg-dock-hyprland/images/task-single-vertical.svg"),
-				imgSizeScaled/8, imgSizeScaled)
+		if err == nil {
+			img = gtk.NewImageFromPixbuf(pixbuf)
+		}
+		if img != nil {
+			if *position == "left" || *position == "top" {
+				box.PackStart(img, false, false, 0)
+				box.PackStart(button, false, false, 0)
+			} else {
+				box.PackStart(button, false, false, 0)
+				box.PackStart(img, false, false, 0)
+			}
+
 		}
 	} else {
-		if !vertical {
-			pixbuf, err = gdkpixbuf.NewPixbufFromFileAtSize(filepath.Join(dataHome, "nwg-dock-hyprland/images/task-empty.svg"),
-				imgSizeScaled, imgSizeScaled/8)
-		} else {
-			pixbuf, err = gdkpixbuf.NewPixbufFromFileAtSize(filepath.Join(dataHome, "nwg-dock-hyprland/images/task-empty-vertical.svg"),
-				imgSizeScaled/8, imgSizeScaled)
-		}
-	}
-	if err == nil {
-		img = gtk.NewImageFromPixbuf(pixbuf)
-	}
-	if img != nil {
-		if *position == "left" || *position == "top" {
-			box.PackStart(img, false, false, 0)
-			box.PackStart(button, false, false, 0)
-		} else {
-			box.PackStart(button, false, false, 0)
-			box.PackStart(img, false, false, 0)
-		}
-
+		// When hiding indicators, just pack the button
+		box.PackStart(button, false, false, 0)
 	}
 	button.Connect("enter-notify-event", cancelClose)
 
